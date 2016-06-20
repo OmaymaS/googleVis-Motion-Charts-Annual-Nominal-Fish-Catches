@@ -1,8 +1,10 @@
 ---
-title: "Annual Nominal Fish Catches-Exploratory Data Analysis"
+title: "Annual Nominal Fish Catches-googleVis Motion Charts "
 author: "OmaymaS"
 date: "June 21, 2016"
-output: html_document
+output: 
+  html_document: 
+    toc: yes
 ---
 # Overview
 
@@ -12,7 +14,9 @@ output: html_document
 library(dplyr)
 library(reshape2)
 library(googleVis)
-
+op<-options(gvis.plot.tag = "chart")
+```
+```{r}
 #read data
 dat<-read.csv("../data/fish_catches.csv",header = T,stringsAsFactors = F)
 country_codes<-read.csv("../data/country_codes.csv",header = T,stringsAsFactors = F)
