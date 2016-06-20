@@ -61,3 +61,17 @@ N = gvisMotionChart(datm.country, "Country", "Year",
                     options = list(showChartButtons=F, state=myState))
 #plot chart
 plot(N)
+
+
+#######################
+datm.species<-datm %>%
+        group_by(Year,Species) %>%
+        summarise(TLW=sum(Quantity)) %>%
+        arrange(Species)
+
+#create motion chart
+#remove upper tabs
+M = gvisMotionChart(datm.species, "Species", "Year",
+                    options = list(showChartButtons=F, state=myState))
+#plot chart
+plot(M)
