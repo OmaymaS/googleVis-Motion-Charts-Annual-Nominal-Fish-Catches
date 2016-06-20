@@ -42,11 +42,10 @@ datm.country<-datm %>%
 
 
 #set state with default line chart, unique colors 
-
 myState<-'
 {"yLambda":1,"showTrails":false,"xAxisOption":"_TIME",
 "xZoomedDataMin":1136073600000,"orderedByY":false,"playDuration":15000,
-"nonSelectedAlpha":0.4,"xZoomedIn":false,"xLambda":1,"colorOption":"2",
+"nonSelectedAlpha":0.4,"xZoomedIn":false,"xLambda":1,"colorOption":"_UNIQUE_COLOR",
 "iconKeySettings":[],"xZoomedDataMax":1388534400000,
 "dimensions":{"iconDimensions":["dim0"]},
 "sizeOption":"_UNISIZE","yZoomedIn":false,
@@ -59,9 +58,8 @@ myState<-'
 #remove upper tabs
 N = gvisMotionChart(datm.country, "Country", "Year",
                     options = list(showChartButtons=F, state=myState))
-#plot chart
-plot(N)
-
+#remove caption
+# N$html$caption=""
 
 #######################
 datm.species<-datm %>%
@@ -73,5 +71,11 @@ datm.species<-datm %>%
 #remove upper tabs
 M = gvisMotionChart(datm.species, "Species", "Year",
                     options = list(showChartButtons=F, state=myState))
+#remove caption
+# M$html$caption=""
+
+BothCharts<-gvisMerge(M,N,horizontal = T)
+
+BothCharts$html$caption=""
 #plot chart
-plot(M)
+plot(BothCharts)
