@@ -1,114 +1,175 @@
-# Annual Nominal Fish Catches-googleVis Motion Charts 
-OmaymaS  
-June 21, 2016  
-# Overview
-This script presents the annual TLW (tonnes live weight) catches of fish and shellfish in the Northeast Atlantic region.
-The data is cleaned and prepared to plot two googleVis interactive charts. The first is for the annual TLW per country and the second is for the annual TLW per Species. *Further modifications are to b  added later*.
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="OmaymaS" />
+
+<meta name="date" content="2016-06-21" />
+
+<title>Annual Nominal Fish Catches-googleVis Motion Charts</title>
+
+<script src="Fish_Catch_ExpAnalysis_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="Fish_Catch_ExpAnalysis_files/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet" />
+<script src="Fish_Catch_ExpAnalysis_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="Fish_Catch_ExpAnalysis_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="Fish_Catch_ExpAnalysis_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="Fish_Catch_ExpAnalysis_files/highlight/default.css"
+      type="text/css" />
+<script src="Fish_Catch_ExpAnalysis_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
 
 
 
-## Loading and Cleaning Data
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
 
 
-```r
-#read data
-dat<-read.csv("./data/fish_catches.csv",header = T,stringsAsFactors = F)
-country_codes<-read.csv("./data/country_codes.csv",header = T,stringsAsFactors = F)
+<div id="header">
+<h1 class="title">Annual Nominal Fish Catches-googleVis Motion Charts</h1>
+<h4 class="author"><em>OmaymaS</em></h4>
+<h4 class="date"><em>June 21, 2016</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#overview">Overview</a><ul>
+<li><a href="#loading-and-cleaning-data">Loading and Cleaning Data</a></li>
+<li><a href="#gvis-motion-charts">gvis Motion Charts</a><ul>
+<li><a href="#calculate-annual-sum-per-country-and-species">Calculate Annual Sum per Country and Species</a></li>
+<li><a href="#create-gvismotioncharts">Create gvisMotionCharts</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This script presents the annual TLW (tonnes live weight) catches of fish and shellfish in the Northeast Atlantic region. The data is cleaned and prepared to plot two googleVis interactive charts. The first is for the annual TLW per country and the second is for the annual TLW per Species. <em>Further modifications are to b added later</em>.</p>
+<div id="loading-and-cleaning-data" class="section level2">
+<h2>Loading and Cleaning Data</h2>
+<pre class="r"><code>#read data
+dat&lt;-read.csv(&quot;./data/fish_catches.csv&quot;,header = T,stringsAsFactors = F)
+country_codes&lt;-read.csv(&quot;./data/country_codes.csv&quot;,header = T,stringsAsFactors = F)
 
 #remove NA columns
-dat<-select(dat,Species:X2006)
+dat&lt;-select(dat,Species:X2006)
 
 #remove x from years 
-names(dat)[5:13]<-sub('.', '', names(dat)[5:13])
+names(dat)[5:13]&lt;-sub(&#39;.&#39;, &#39;&#39;, names(dat)[5:13])
 
 #melt the data frame to long format
-datm<-melt(dat,id=names(dat)[1:4],
-           variable.name = "Year",
-           value.name = "Quantity")
+datm&lt;-melt(dat,id=names(dat)[1:4],
+           variable.name = &quot;Year&quot;,
+           value.name = &quot;Quantity&quot;)
 
 #Na.omit
-datm<-na.omit(datm)
+datm&lt;-na.omit(datm)
 
 #change year from factor to numeric
-datm$Year<-as.numeric(as.character(datm$Year))
+datm$Year&lt;-as.numeric(as.character(datm$Year))
 
 #extract country and code from the country_codes dataframe
-cc<-country_codes[,1:2]
+cc&lt;-country_codes[,1:2]
 
 #merge the main data and country codes 
-datm<-left_join(datm,cc,by=c("Country"="Code"))
+datm&lt;-left_join(datm,cc,by=c(&quot;Country&quot;=&quot;Code&quot;))
 
 #rename columns 
-names(datm)[names(datm)=="Country"]="Code"
-names(datm)[names(datm)=="Description"]="Country"
-```
-Now, after melting the original dataframe and the adding the country name we have the following dataframe:
-
-```
-##   Species   Area Units Code Year Quantity  Country
+names(datm)[names(datm)==&quot;Country&quot;]=&quot;Code&quot;
+names(datm)[names(datm)==&quot;Description&quot;]=&quot;Country&quot;</code></pre>
+<p>Now, after melting the original dataframe and the adding the country name we have the following dataframe:</p>
+<pre><code>##   Species   Area Units Code Year Quantity  Country
 ## 1     ANF     27   TLW   BE 2014      993  Belgium
 ## 2     ANF   27.4   TLW   BE 2014      217  Belgium
 ## 3     ANF 27.4.A   TLW   BE 2014        0  Belgium
 ## 4     ANF 27.4.B   TLW   BE 2014      213  Belgium
 ## 5     ANF 27.4.C   TLW   BE 2014        4  Belgium
-## 6     ANF   27.7   TLW   BE 2014      491  Belgium
-```
-
-## gvis Motion Charts
-
-### Calculate Annual Sum per Country and Species
-
-Here we would like to plot the total amount of fish catch grouped by country then by species. So first we will create the dataframes to be used.
-
-```r
-#Total tonnage by country
-datm.country<-datm %>%
-        group_by(Year,Country) %>%
-        summarise(TLW=sum(Quantity)) %>%
+## 6     ANF   27.7   TLW   BE 2014      491  Belgium</code></pre>
+</div>
+<div id="gvis-motion-charts" class="section level2">
+<h2>gvis Motion Charts</h2>
+<div id="calculate-annual-sum-per-country-and-species" class="section level3">
+<h3>Calculate Annual Sum per Country and Species</h3>
+<p>Here we would like to plot the total amount of fish catch grouped by country then by species. So first we will create the dataframes to be used.</p>
+<pre class="r"><code>#Total tonnage by country
+datm.country&lt;-datm %&gt;%
+        group_by(Year,Country) %&gt;%
+        summarise(TLW=sum(Quantity)) %&gt;%
         arrange(Country)
 
 #Total tonnage by species
-datm.species<-datm %>%
-        group_by(Year,Species) %>%
-        summarise(TLW=sum(Quantity)) %>%
-        arrange(Species)
-```
-
-### Create gvisMotionCharts
-
-Then we will create two gvisMotionCharts and plot them. But we will set its state first to show the line plot and use unique colors by default.
-
-
-```r
-myState<-'
-{"yLambda":1,"showTrails":false,"xAxisOption":"_TIME",
-"xZoomedDataMin":1136073600000,"orderedByY":false,"playDuration":15000,
-"nonSelectedAlpha":0.4,"xZoomedIn":false,"xLambda":1,"colorOption":"_UNIQUE_COLOR",
-"iconKeySettings":[],"xZoomedDataMax":1388534400000,
-"dimensions":{"iconDimensions":["dim0"]},
-"sizeOption":"_UNISIZE","yZoomedIn":false,
-"uniColorForNonSelected":false,"time":"2014","yZoomedDataMax":10000000,
-"iconType":"LINE","duration":{"timeUnit":"Y","multiplier":1},
-"yAxisOption":"2","yZoomedDataMin":0,"orderedByX":false}
-'
+datm.species&lt;-datm %&gt;%
+        group_by(Year,Species) %&gt;%
+        summarise(TLW=sum(Quantity)) %&gt;%
+        arrange(Species)</code></pre>
+</div>
+<div id="create-gvismotioncharts" class="section level3">
+<h3>Create gvisMotionCharts</h3>
+<p>Then we will create two gvisMotionCharts and plot them. But we will set its state first to show the line plot and use unique colors by default.</p>
+<pre class="r"><code>myState&lt;-&#39;
+{&quot;yLambda&quot;:1,&quot;showTrails&quot;:false,&quot;xAxisOption&quot;:&quot;_TIME&quot;,
+&quot;xZoomedDataMin&quot;:1136073600000,&quot;orderedByY&quot;:false,&quot;playDuration&quot;:15000,
+&quot;nonSelectedAlpha&quot;:0.4,&quot;xZoomedIn&quot;:false,&quot;xLambda&quot;:1,&quot;colorOption&quot;:&quot;_UNIQUE_COLOR&quot;,
+&quot;iconKeySettings&quot;:[],&quot;xZoomedDataMax&quot;:1388534400000,
+&quot;dimensions&quot;:{&quot;iconDimensions&quot;:[&quot;dim0&quot;]},
+&quot;sizeOption&quot;:&quot;_UNISIZE&quot;,&quot;yZoomedIn&quot;:false,
+&quot;uniColorForNonSelected&quot;:false,&quot;time&quot;:&quot;2014&quot;,&quot;yZoomedDataMax&quot;:10000000,
+&quot;iconType&quot;:&quot;LINE&quot;,&quot;duration&quot;:{&quot;timeUnit&quot;:&quot;Y&quot;,&quot;multiplier&quot;:1},
+&quot;yAxisOption&quot;:&quot;2&quot;,&quot;yZoomedDataMin&quot;:0,&quot;orderedByX&quot;:false}
+&#39;
 
 #create the country chart
-CountryChart = gvisMotionChart(datm.country, "Country", "Year",
+CountryChart = gvisMotionChart(datm.country, &quot;Country&quot;, &quot;Year&quot;,
                     options = list(showChartButtons=F, state=myState))
 #create the species chart
-SpeciesChart= gvisMotionChart(datm.species, "Species", "Year",
+SpeciesChart= gvisMotionChart(datm.species, &quot;Species&quot;, &quot;Year&quot;,
                     options = list(showChartButtons=F, state=myState))
 #Plot the 2 charts 
-BothCharts<-gvisMerge(CountryChart,SpeciesChart)
+BothCharts&lt;-gvisMerge(CountryChart,SpeciesChart)
 #remove caption
-BothCharts$html$caption=""
-plot(BothCharts)
-```
-
+BothCharts$html$caption=&quot;&quot;
+plot(BothCharts)</code></pre>
 <!-- MotionChart generated in R 3.2.1 by googleVis 0.5.10 package -->
 <!-- Tue Jun 21 22:17:00 2016 -->
-
-
 <!-- jsHeader -->
 <script type="text/javascript">
  
@@ -42240,35 +42301,53 @@ callbacks.shift()();
  
 // jsFooter
 </script>
- 
-<!-- jsChart -->  
+<!-- jsChart -->
 <script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID282c601069c6"></script>
-
-
-<!-- jsChart -->  
+<!-- jsChart -->
 <script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMotionChartID282c7b037ca3"></script>
- 
 <table border="0">
 <tr>
 <td>
-
 <!-- divChart -->
-  
-<div id="MotionChartID282c601069c6" 
-  style="width: 600; height: 500;">
-</div>
+<div id="MotionChartID282c601069c6" style="width: 600; height: 500;">
 
+</div>
 </td>
 </tr>
 <tr>
 <td>
-
 <!-- divChart -->
-  
-<div id="MotionChartID282c7b037ca3" 
-  style="width: 600; height: 500;">
-</div>
+<div id="MotionChartID282c7b037ca3" style="width: 600; height: 500;">
 
+</div>
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
