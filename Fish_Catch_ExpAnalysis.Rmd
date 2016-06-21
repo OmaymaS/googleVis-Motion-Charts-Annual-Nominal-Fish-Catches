@@ -86,22 +86,18 @@ Then we will create two gvisMotionCharts and plot them. But we will set its stat
 myState<-'
 {"yLambda":1,"showTrails":false,"xAxisOption":"_TIME",
 "xZoomedDataMin":1136073600000,"orderedByY":false,"playDuration":15000,
-"nonSelectedAlpha":0.4,"xZoomedIn":false,"xLambda":1,
+"nonSelectedAlpha":0.4,"xZoomedIn":false,"xLambda":1,"colorOption":"_UNIQUE_COLOR",
 "iconKeySettings":[],"xZoomedDataMax":1388534400000,
 "dimensions":{"iconDimensions":["dim0"]},
 "sizeOption":"_UNISIZE","yZoomedIn":false,
 "uniColorForNonSelected":false,"time":"2014","yZoomedDataMax":10000000,
-"duration":{"timeUnit":"Y","multiplier":1},
-"yAxisOption":"2","yZoomedDataMin":0,"orderedByX":false,
-"iconType":"LINE",
-"colorOption":"_UNIQUE_COLOR",
-}
+"iconType":"LINE","duration":{"timeUnit":"Y","multiplier":1},
+"yAxisOption":"2","yZoomedDataMin":0,"orderedByX":false}
 '
 
 #create the country chart
 CountryChart = gvisMotionChart(datm.country, "Country", "Year",
-                    options = list(showChartButtons=F,
-                                   state=myState))
+                    options = list(showChartButtons=F, state=myState))
 #create the species chart
 SpeciesChart= gvisMotionChart(datm.species, "Species", "Year",
                     options = list(showChartButtons=F, state=myState))
