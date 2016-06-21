@@ -24,8 +24,8 @@ op<-options(gvis.plot.tag = "chart")
 
 ```{r}
 #read data
-dat<-read.csv("../data/fish_catches.csv",header = T,stringsAsFactors = F)
-country_codes<-read.csv("../data/country_codes.csv",header = T,stringsAsFactors = F)
+dat<-read.csv("./data/fish_catches.csv",header = T,stringsAsFactors = F)
+country_codes<-read.csv("./data/country_codes.csv",header = T,stringsAsFactors = F)
 
 #remove NA columns
 dat<-select(dat,Species:X2006)
@@ -110,3 +110,4 @@ BothCharts<-gvisMerge(CountryChart,SpeciesChart)
 #remove caption
 BothCharts$html$caption=""
 plot(BothCharts)
+```
